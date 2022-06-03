@@ -19,17 +19,20 @@ workloads=("NONE" "HHHH" "HHHL" "HHLL" "HLLL" "LLLL")
 # for sched in "FRFCFS" "FCFS" "ATLAS" "BLISS" "TCM" "PARBS" "MLQSched"
 for sched in "MLQSched"
 do
-    for core in 4 16 32
+    for core in 1 16 32
     do
         # generateConfigs $core $sched
-    
-    for i in 1 2 3 4 5
-    do
-        mono bin/sim.exe -output ${outdir}/${core}core_base_${workloads[$i]}_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core $i
+        if [$core=1]
+        then
+            mono bin/sim.exe -output ${outdir}/${core}core_base_L_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core 1
+            mono bin/sim.exe -output ${outdir}/${core}core_base_H_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core 2
+        else
+            for i in 1 2 3 4 5
+            do
+                mono bin/sim.exe -output ${outdir}/${core}core_base_${workloads[$i]}_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core $i
+            done
+        fi
     done
-    done
-
-    
 done
 
 # mono bin/sim.exe -output $outdir/4core+LISA-ALL.json -config configs/LISA_RISC+VILLA+LIP_4core.cfg -N 1 -workload workloads/4core_mix 1
