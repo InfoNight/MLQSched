@@ -16,20 +16,22 @@ function generateConfigs {
 
 # ** Applications: forkset, bootup, tpcc64, libquantum
 workloads=("NONE" "HHHH" "HHHL" "HHLL" "HLLL" "LLLL")
-# for sched in "FRFCFS" "FCFS" "ATLAS" "BLISS" "TCM" "PARBS" "MLQSched"
-for sched in "MLQSched"
+for sched in "FRFCFS" "FCFS" "ATLAS" "BLISS" "TCM" "PARBS" "MLQSched"
+# for sched in "MLQSched"
 do
-    for core in 1 16 32
+    for core in 1
     do
         # generateConfigs $core $sched
-        if [$core=1]
+        if [ ${core} -eq 1 ];
         then
             mono bin/sim.exe -output ${outdir}/${core}core_base_L_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core 1
             mono bin/sim.exe -output ${outdir}/${core}core_base_H_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core 2
+            sleep 10
         else
             for i in 1 2 3 4 5
             do
                 mono bin/sim.exe -output ${outdir}/${core}core_base_${workloads[$i]}_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core $i
+                sleep 10
             done
         fi
     done
