@@ -7,7 +7,8 @@ namespace Ramulator.MemSched
     {
         //shuffle
         private int _shuffleCyclesLeft;
-
+        private int _max_priority;
+        private int _min_priority;
         private int[] _corePriority;
 
         public MLQSched(MemCtrl.MemCtrl mctrl, MemCtrl.MemCtrl[] mctrls)
@@ -15,6 +16,8 @@ namespace Ramulator.MemSched
         {
             _shuffleCyclesLeft = Config.sched.mlqsched_shuffle_cycles;
             _corePriority = new int[Config.N];
+            _max_priority = Config.N;
+            _min_priority = 0;
             clear_priority();
         }
 
@@ -30,18 +33,34 @@ namespace Ramulator.MemSched
         {
         }
 
+        private void adjust_priority(Req req, bool hit)
+        {
+            int curr_priority = _corePriority[req.Pid];
+            if (hit)
+                _corePriority[req.Pid] = (curr_priority == _max_priority) ? _max_priority : (curr_priority + 1);
+            else
+                _corePriority[req.Pid] = (curr_priority == _min_priority) ? _min_priority : (curr_priority - 1);
+        }
+
         public override Req better_req(Req req1, Req req2)
         {
+            bool hit1 = is_row_hit(req1);
+            bool hit2 = is_row_hit(req2);
+
+            adjust_priority(req1, hit1);
+            adjust_priority(req2, hit2);
+
             if (_corePriority[req1.Pid] > _corePriority[req2.Pid])
                 return req1;
             else if (_corePriority[req1.Pid] < _corePriority[req2.Pid])
                 return req2;
 
-            if (!is_row_hit(req1))
-                _corePriority[req1.Pid] -= 1;
-            if (!is_row_hit(req2))
-                _corePriority[req2.Pid] -= 1;
 
+            if (hit1 ^ hit2)
+            {
+                if (hit1) return req1;
+                else return req2;
+            }
             if (req1.TsArrival <= req2.TsArrival) return req1;
             else return req2;
         }
@@ -65,7 +84,7 @@ namespace Ramulator.MemSched
         public void clear_priority()
         {
             for (int p = 0; p < Config.N; p++)
-                _corePriority[p] = Config.sched.max_priority;
+                _corePriority[p] = _max_priority;
         }
 
         public override void issue_req(Req req)

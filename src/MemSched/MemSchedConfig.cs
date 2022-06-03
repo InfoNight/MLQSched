@@ -75,7 +75,7 @@ namespace Ramulator.MemSched
         /*************************
          * MLQSched
          *************************/
-        public int max_priority = 4;
+        public int max_priority = 16;
         public int mlqsched_shuffle_cycles = 10000;
 
         protected override bool set_special_param(string param, string val)
