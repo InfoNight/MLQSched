@@ -1,5 +1,6 @@
 #!/bin/sh
-outdir=ourResults
+SUFFIX=$1
+outdir=ourResults/${SUFFIX}
 mkdir $outdir
 
 function generateConfigs {
@@ -15,12 +16,13 @@ function generateConfigs {
 
 # ** Applications: forkset, bootup, tpcc64, libquantum
 workloads=("NONE" "HHHH" "HHHL" "HHLL" "HLLL" "LLLL")
-for sched in "FRFCFS" "FCFS" "ATLAS" "BLISS" "TCM" "PARBS"
-# for sched in "FRFCFS"
+# for sched in "FRFCFS" "FCFS" "ATLAS" "BLISS" "TCM" "PARBS" "MLQSched"
+for sched in "MLQSched"
 do
-    for core in 16 32
+    for core in 4 16 32
     do
         # generateConfigs $core $sched
+    
     for i in 1 2 3 4 5
     do
         mono bin/sim.exe -output ${outdir}/${core}core_base_${workloads[$i]}_${sched}_.json -config configs/${core}core_base_$sched.cfg -N $core -workload workloads/${core}core $i
