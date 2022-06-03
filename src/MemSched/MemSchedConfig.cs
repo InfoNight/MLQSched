@@ -72,6 +72,12 @@ namespace Ramulator.MemSched
         public int bliss_row_hit_cap = 4;
         public int frfcfs_qos_threshold = 2000;
 
+        /*************************
+         * MLQSched
+         *************************/
+        public int max_priority = 4;
+        public int mlqsched_shuffle_cycles = 10000;
+
         protected override bool set_special_param(string param, string val)
         {
             return false;
