@@ -21,7 +21,7 @@ for file in files:
     print(filesplit)
     core = int(filesplit[0][:-4])
     workload = filesplit[2]
-    sched = filesplit[3]
+    sched = '_'.join([e for e in filesplit[3:] if e != '.json'])
     filepath = outdir + file
     jsonf = open(filepath)
     data = json.load(jsonf)
@@ -34,6 +34,7 @@ for file in files:
 
 df = pd.DataFrame(total_results, columns = ['core', 'workload', 'sched', 'ipc'])
 df_sort = df.sort_values(['core', 'workload', 'ipc'], ascending = [True, False, False])
+df_sort["rank"] = df_sort.groupby(['core', 'workload'])["ipc"].rank("dense", ascending=False)
 df_sort.to_csv(output_filename, index = False, header = False)
 
 
