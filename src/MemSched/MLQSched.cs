@@ -42,19 +42,20 @@ namespace Ramulator.MemSched
                 _corePriority[req.Pid] = (curr_priority == _min_priority) ? _min_priority : (curr_priority - 1);
         }
 
+        // version 3
         public override Req better_req(Req req1, Req req2)
         {
-            bool hit1 = is_row_hit(req1);
-            bool hit2 = is_row_hit(req2);
-
-            adjust_priority(req1, hit1);
-            adjust_priority(req2, hit2);
 
             if (_corePriority[req1.Pid] > _corePriority[req2.Pid])
                 return req1;
             else if (_corePriority[req1.Pid] < _corePriority[req2.Pid])
                 return req2;
 
+            bool hit1 = is_row_hit(req1);
+            bool hit2 = is_row_hit(req2);
+
+            adjust_priority(req1, hit1);
+            adjust_priority(req2, hit2);
 
             if (hit1 ^ hit2)
             {
@@ -64,6 +65,54 @@ namespace Ramulator.MemSched
             if (req1.TsArrival <= req2.TsArrival) return req1;
             else return req2;
         }
+
+        // version 2
+        // public override Req better_req(Req req1, Req req2)
+        // {
+        //     bool hit1 = is_row_hit(req1);
+        //     bool hit2 = is_row_hit(req2);
+
+        //     adjust_priority(req1, hit1);
+        //     adjust_priority(req2, hit2);
+            
+        //     if (hit1 ^ hit2)
+        //     {
+        //         if (hit1) return req1;
+        //         else return req2;
+        //     }
+
+        //     if (_corePriority[req1.Pid] > _corePriority[req2.Pid])
+        //         return req1;
+        //     else if (_corePriority[req1.Pid] < _corePriority[req2.Pid])
+        //         return req2;
+
+        //     if (req1.TsArrival <= req2.TsArrival) return req1;
+        //     else return req2;
+        // }
+
+        // version 1
+        // public override Req better_req(Req req1, Req req2)
+        // {
+        //     bool hit1 = is_row_hit(req1);
+        //     bool hit2 = is_row_hit(req2);
+
+        //     adjust_priority(req1, hit1);
+        //     adjust_priority(req2, hit2);
+
+        //     if (_corePriority[req1.Pid] > _corePriority[req2.Pid])
+        //         return req1;
+        //     else if (_corePriority[req1.Pid] < _corePriority[req2.Pid])
+        //         return req2;
+
+
+        //     if (hit1 ^ hit2)
+        //     {
+        //         if (hit1) return req1;
+        //         else return req2;
+        //     }
+        //     if (req1.TsArrival <= req2.TsArrival) return req1;
+        //     else return req2;
+        // }
 
         public override void Tick()
         {
