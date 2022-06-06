@@ -11,7 +11,7 @@ parser.add_argument('--suffix')
 args = parser.parse_args()
 
 # scheds = ["ATLAS", "BLISS", "FCFS", "FRFCFS", "PARBS", "TCM"]
-scheds = ["BLISS", "FCFS", "ATLAS", "FRFCFS", "PARBS", "TCM"]
+scheds = ["BLISS", "FCFS", "ATLAS", "FRFCFS", "PARBS", "TCM", "TCMPlus"]
 traces = ["464.h264ref.gz", "462.libquantum.gz", "458.sjeng.gz", "429.mcf.gz", "447.dealII.gz", "433.milc.gz", "435.gromacs.gz", "459.GemsFDTD.gz"]
 traces_type = ["int"]*4 + ["float"]*4
 traces_intensity = ["Not intensive", "Intensive"] * 4
@@ -41,7 +41,8 @@ for sched in scheds:
             cycle = proc["cycle"]
             inst = data['cache'][0]['total_system_inst_executed']
             ipc = float(inst)/float(cycle)
-            mcpi = 1.0 / (float(proc["rmpc"]) + float(proc["wmpc"]))
+            # mcpi = 1.0 / (float(proc["rmpc"]) + float(proc["wmpc"]))
+            mcpi = float(proc["stall_inst_wnd"])
             single_core_result.append(([traces[index], traces_type[index], traces_intensity[index], traces_RB[index], ipc, mcpi]))
 
         df = pd.DataFrame(single_core_result, columns = ["Trace", "Type", "Intensity", "RB hit rate", "IPC", "MCPI"])
@@ -62,7 +63,7 @@ for sched in scheds:
         mcpi_shared = []
         for proc in procs:
             ipc_shared.append((proc["trace_fname"], float(proc["ipc"])))
-            mcpi_i = 1.0 / (float(proc["rmpc"]) + float(proc["wmpc"]))
+            mcpi_i = float(proc["stall_inst_wnd"])
             mcpi_shared.append((proc["trace_fname"], mcpi_i))
 
         # Extract metrics: W. SpeedUp, H. SpeedUp, Sum-of-IPCs, Memory Slowdown, Maximum Slowdown, Unfairness
