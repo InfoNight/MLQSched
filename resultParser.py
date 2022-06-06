@@ -5,8 +5,8 @@ import argparse
 import pandas as pd
 
 parser = argparse.ArgumentParser()
-parser.add_argument('outdir')
-parser.add_argument('suffix')
+parser.add_argument('--outdir')
+parser.add_argument('--suffix')
 
 args = parser.parse_args()
 
